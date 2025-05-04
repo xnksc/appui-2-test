@@ -1,21 +1,25 @@
 <template>
-  <table-list
-    style="cursor: pointer"
-    @rowClick="onRowClick"
-    :definition="tableListDefinition"
-    :data="posts"
-    v-if="posts.length > 0"
-    header-background
-    rows-color-alternation
-    select-row-on-click
-  >
-  </table-list>
+  <div v-if="posts.length > 0">
+    <app-input v-model="inputCity" style="margin: 20px 0" width="250px" placeholder="Поиск по городу" />
+    <table-list
+      style="cursor: pointer"
+      @rowClick="onRowClick"
+      :definition="tableListDefinition"
+      :data="filteredPosts"
+      v-if="filteredPosts.length > 0"
+      header-background
+      rows-color-alternation
+      select-row-on-click
+    >
+    </table-list>
+    <p style="margin: 10px; text-align: center">Нет постов по данному городу</p>
+  </div>
   <div v-else>
     <loader></loader>
   </div>
 </template>
 <script setup lang="ts">
-import { defineTableColumns, Loader, TableList } from '@mcdis/app-ui-2-starter-kit';
+import { defineTableColumns, Loader, TableList, AppInput } from '@mcdis/app-ui-2-starter-kit';
 import { ref, onMounted, computed } from 'vue';
 import { getPostsAsync } from '../services/PostService';
 import { getUsersAsync } from '../services/UserService';
@@ -31,6 +35,14 @@ const selectedPost = ref<IPost | null>(null);
 const isSidebarOpen = ref(false);
 
 const { uiSection } = useAppUiComponent();
+
+const inputCity = ref('');
+const filteredPosts = computed(() => {
+  return posts.value.filter(post => {
+    const user = users.value.find(u => u.id === post.userId);
+    return !inputCity.value || user?.address.city.toLowerCase().includes(inputCity.value.toLowerCase());
+  });
+});
 
 const selectedUser = computed(() => {
   if (selectedPost.value) {

@@ -4,7 +4,7 @@
       <UserCard v-for="user in users" :key="user.id" :user="user" />
     </div>
     <div v-else>
-      <p>Загрузка списка пользователей...</p>
+      <loader></loader>
     </div>
   </div>
 </template>
@@ -14,6 +14,7 @@ import { ref, onMounted } from 'vue';
 import { IUser } from '@/types/IUser';
 import UserCard from '../components/UserCard.vue';
 import { getUsersAsync } from '../services/UserService';
+import { Loader } from '@mcdis/app-ui-2-starter-kit';
 
 const users = ref<IUser[]>([]);
 
